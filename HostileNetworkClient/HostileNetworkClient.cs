@@ -30,19 +30,26 @@ namespace HostileNetwork {
             }
 
 
+            launchClient();
+        }
+
+        private static void launchClient() {
+            
             const int PORT = 58008;
             string data = "";
+            string sendAddressString = "127.0.0.1";
             byte[] sendBytes = new Byte[1024];
             byte[] rcvPacket = new Byte[1024];
             UdpClient client = new UdpClient();
-            IPAddress address = IPAddress.Parse(IPAddress.Broadcast.ToString());
-            client.Connect(address, PORT);
-            IPEndPoint remoteIPEndPoint = new IPEndPoint(IPAddress.Any, 0);
+
+            IPAddress sendAddress = IPAddress.Parse(sendAddressString);
+            client.Connect(sendAddress, PORT);
+            IPEndPoint remoteIPEndPoint = new IPEndPoint(sendAddress, PORT);
 
             Console.WriteLine("Client is Started");
             Console.WriteLine("Type your message");
 
-            while (data != "q") {
+            while (true) {
                 data = Console.ReadLine();
                 sendBytes = Encoding.ASCII.GetBytes(DateTime.Now.ToString() + " " + data);
                 client.Send(sendBytes, sendBytes.GetLength(0));
@@ -51,7 +58,7 @@ namespace HostileNetwork {
                 string rcvData = Encoding.ASCII.GetString(rcvPacket);
                 Console.WriteLine("Handling client at " + remoteIPEndPoint + " - ");
 
-                Console.WriteLine("Message Received: " + rcvPacket.ToString());
+                Console.WriteLine("Message Received: " + rcvData);
             }
             Console.WriteLine("Close Port Command Sent");  //user feedback
             Console.ReadLine();
